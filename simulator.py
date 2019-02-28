@@ -375,8 +375,8 @@ if __name__ == '__main__':
 		obj1 = Manual_Player()
 		obj2 = Manual_Player()
 	elif option == '4':
-		obj1 = Random_Player()
-		obj2 = MyPlayer()
+		obj1 = MyPlayer()
+		obj2 = Random_Player()
 	else:
 		print 'Invalid option'
 		sys.exit(1)

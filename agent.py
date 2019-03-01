@@ -48,14 +48,14 @@ class MyPlayer():
 					if i %3 == 1 and j%3==1:
 						if board.big_boards_status[k][i][j] == 'x':
 							cross_score += 3
-						else :
+						if board.big_boards_status[k][i][j] == 'o':
 							oval_score += 3
 					elif (i %3 ==1 and j%3 != 1) or (i%3!=1 and j%3==1):
 						pass
 					else:
 						if board.big_boards_status[k][i][j] == 'x':
 							cross_score += 2
-						else :
+						if board.big_boards_status[k][i][j] == 'o':
 							oval_score += 2
 					
 					#center square of full board
@@ -63,16 +63,16 @@ class MyPlayer():
 					if i == 4 and j == 4:
 						if board.big_boards_status[k][i][j] == 'x':
 							cross_score += 3
-						else : 
+						if board.big_boards_status[k][i][j] == 'o':
 							oval_score += 3
 
 		for i in range(3):
-			for k in range(2):
+			for k in range(2):	
 				for j in range(3):
 
 					if board.small_boards_status[k][i][j] == 'x':
 						cross_score += 5
-					else : 
+					if board.small_boards_status[k][i][j] == 'o':
 						oval_score += 5
 						
 
@@ -80,7 +80,7 @@ class MyPlayer():
 					if i==1 and j==1:
 						if board.small_boards_status[k][i][j] == 'x':
 							cross_score += 10
-						else : 
+						if board.small_boards_status[k][i][j] == 'o':
 							oval_score += 10 
 
 					elif (i %3==1 and j %3 !=1) or (i%3!=1 and j%3==1):
@@ -88,14 +88,14 @@ class MyPlayer():
 					else:
 						if board.small_boards_status[k][i][j] == 'x':
 							cross_score += 3
-						else :
+						if board.small_boards_status[k][i][j] == 'o':
 							oval_score += 3
 
 		# print cross_score,oval_score
 		if(flg == 'o') :
-			return oval_score
+			return oval_score - cross_score
 		else : 
-			return cross_score     
+			return cross_score - oval_score
 
 	def minmax(self,cur_board,old_move,flg,dep):
 		flg2 = 'o'
@@ -105,7 +105,7 @@ class MyPlayer():
 			return self.heuristic(cur_board,flg) 
 		elif dep == 1 :
 			allowed_cells = self.find_valid_move_cells(cur_board,old_move)
-			mn = inf
+			mn = -inf
 			mnx = 0
 			mny = 0
 			mnz = 0

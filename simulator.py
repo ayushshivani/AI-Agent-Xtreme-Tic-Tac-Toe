@@ -17,7 +17,8 @@ import time
 import copy
 import traceback
 from agent import MyPlayer
-from sanchit import MyPlayer
+from newbeg1 import Team162
+# from sanchit import MyPlayer
 TIME = 24
 MAX_PTS = 86
 
@@ -363,7 +364,7 @@ if __name__ == '__main__':
 		sys.exit(1)
  
 	obj1 = ''
-	obj2 = ''
+	obj2 = ''	
 	option = sys.argv[1]	
 	if option == '1':
 		obj1 = Random_Player()
@@ -380,6 +381,9 @@ if __name__ == '__main__':
 		obj2 = Manual_Player()
 	elif option == '4':
 		obj1 = Random_Player()
+		obj2 = MyPlayer()
+	elif option == '5':
+		obj1 = Team162()
 		obj2 = MyPlayer()
 	else:
 		print 'Invalid option'

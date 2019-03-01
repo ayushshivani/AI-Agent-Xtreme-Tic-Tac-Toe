@@ -59,6 +59,7 @@ class MyPlayer():
 				if bs[i] != '-' :
 					flag = flag + 1
 		if flag == 9 :
+			self.small_board_score[bs]= 0
 			return 0
 		ply = bs[9]
 		if ply == 'o' :
@@ -157,7 +158,7 @@ class MyPlayer():
 		flg2 = 'o'
 		if flg == 'o' : 
 			flg2 = 'x'
-		if dep == 2 :
+		if dep == 4 :
 			return self.heuristic(cur_board,flg) 
 		elif dep % 2 == 1 :
 			allowed_cells = self.find_valid_move_cells(cur_board,old_move)
@@ -200,7 +201,7 @@ class MyPlayer():
 						mnz = z
 					cur_board.big_boards_status[x][y][z]='-'
 					cur_board.small_boards_status[x][sty][stz] = '-'					
-				return (x,y,z)
+				return (mnx,mny,mnz)
 		else :
 			allowed_cells = self.find_valid_move_cells(cur_board,old_move)
 			mx = 0
@@ -242,7 +243,7 @@ class MyPlayer():
 						mxz = z
 					cur_board.big_boards_status[x][y][z]='-'
 					cur_board.small_boards_status[x][sty][stz] = '-'					
-				return (x,y,z)
+				return (mxx,mxy,mxz)
 
 
 

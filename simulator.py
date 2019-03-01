@@ -18,7 +18,7 @@ import copy
 import traceback
 from agent import MyPlayer
 from chicks import Team162
-from bj import Team26
+from team26 import Team26
 from sanchit import bot3
 TIME = 24
 MAX_PTS = 86
@@ -385,11 +385,11 @@ if __name__ == '__main__':
 		obj1 = Random_Player()
 		obj2 = MyPlayer()
 	elif option == '5':
+		obj2 = Team26()
 		obj1 = MyPlayer()
-		obj2 = Team26()
 	elif option == '6':
-		obj1 = bot3()
-		obj2 = Team26()
+		obj1 = MyPlayer()
+		obj2 = bot3()
 	else:
 		print 'Invalid option'
 		sys.exit(1)

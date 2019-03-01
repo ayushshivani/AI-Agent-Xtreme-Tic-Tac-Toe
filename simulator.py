@@ -17,8 +17,9 @@ import time
 import copy
 import traceback
 from agent import MyPlayer
-from newbeg1 import Team162
-# from sanchit import MyPlayer
+from chicks import Team162
+from bj import Team26
+from sanchit import bot3
 TIME = 24
 MAX_PTS = 86
 
@@ -55,6 +56,7 @@ class BigBoard:
 		# small_boards_status shows which small_boards have been won/drawn and by which player
 		self.big_boards_status = ([['-' for i in range(9)] for j in range(9)], [['-' for i in range(9)] for j in range(9)])
 		self.small_boards_status = ([['-' for i in range(3)] for j in range(3)], [['-' for i in range(3)] for j in range(3)])
+
 
 	def print_board(self):
 		# for printing the state of the board
@@ -383,8 +385,11 @@ if __name__ == '__main__':
 		obj1 = Random_Player()
 		obj2 = MyPlayer()
 	elif option == '5':
-		obj1 = Team162()
-		obj2 = MyPlayer()
+		obj1 = MyPlayer()
+		obj2 = Team26()
+	elif option == '6':
+		obj1 = bot3()
+		obj2 = Team26()
 	else:
 		print 'Invalid option'
 		sys.exit(1)

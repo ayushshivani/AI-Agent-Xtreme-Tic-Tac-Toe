@@ -7,14 +7,99 @@ import copy
 
 inf = 10000000000
 class MyPlayer():
-
+	
 	def __init__(self):
-		pass
+		self.empty_small_board = "----------"
+		self.small_board_score = {}
+		self.empty_small_board = self.change(self.empty_small_board,9,'o') 
+		self.preprocess(self.empty_small_board)
+		self.empty_small_board = self.change(self.empty_small_board,9,'x') 
+		self.preprocess(self.empty_small_board)
+
+	def change(self,s,i,c):
+		s = s[:i] + c + s[i+1:]
+		return s
+
+	def preprocess(self,bs):
+		#checking for vertical pattern
+		for i in range(3):
+			if (bs[i] == bs[3+i] == bs[6+i]) and (bs[i] == 'o'):
+				self.small_board_score[bs]=50
+				return 50
+			if (bs[i] == bs[3+i] == bs[6+i]) and (bs[i] == 'x'):
+				self.small_board_score[bs]=-50
+				return -50
+			#checking for horizontal pattern
+			if (bs[3*i] == bs[3*i+1] == bs[3*i+2]) and (bs[3*i+2] == 'o'):
+				self.small_board_score[bs]=50
+				return 50
+			if (bs[3*i] == bs[3*i+1] == bs[3*i+2]) and (bs[3*i+2] == 'x'):
+				self.small_board_score[bs]=-50
+				return -50
+		#checking for diagonal patterns
+		#diagonal 1
+		if (bs[0] == bs[4] == bs[8]) and (bs[0] == 'o'):
+			self.small_board_score[bs]=50
+			return 50
+		if (bs[0] == bs[4] == bs[8]) and (bs[0] == 'x'):
+			self.small_board_score[bs]=-50
+			return -50
+		#diagonal 2
+		if (bs[2] == bs[4] == bs[6]) and (bs[2] == 'o'):
+			self.small_board_score[bs]=50
+			return 50
+		if (bs[2] == bs[4] == bs[6]) and (bs[2] == 'x'):
+			self.small_board_score[bs]=-50
+			return -50
+		if bs in self.small_board_score:
+			return self.small_board_score[bs]
+		#check if board is already complete
+		flag = 0
+		for i in range(9):
+				if bs[i] != '-' :
+					flag = flag + 1
+		if flag == 9 :
+			return 0
+		ply = bs[9]
+		if ply == 'o' :
+			mx = -50
+			for i in range(9):
+				if bs[i] == '-':
+					bs = self.change(bs,i,'o')
+					bs = self.change(bs,9,'x')
+					mx = max(mx,self.preprocess(bs))
+					bs = self.change(bs,9,'o')
+					self.preprocess(bs)
+					bs = self.change(bs,i,'x')
+					bs = self.change(bs,9,'x')
+					self.preprocess(bs)
+					bs = self.change(bs,9,'o')
+					self.preprocess(bs)
+					bs = self.change(bs,i,'-')
+			self.small_board_score[bs] = mx
+			# print(bs,mx)
+			return mx
+		else :
+			mn = 50
+			for i in range(9):
+				if bs[i] == '-':
+					bs = self.change(bs,i,'x')
+					bs = self.change(bs,9,'o')
+					mn = min(mn,self.preprocess(bs))
+					bs = self.change(bs,9,'x')
+					self.preprocess(bs)
+					bs = self.change(bs,i,'o')
+					bs = self.change(bs,9,'o')
+					self.preprocess(bs)
+					bs = self.change(bs,9,'x')
+					self.preprocess(bs)
+					bs = self.change(bs,i,'-')
+			# print(bs,mn)
+			self.small_board_score[bs] = mn
+			return mn
 
 	def find_valid_move_cells(self, board,old_move):
 	#returns the valid cells allowed given the last move and the current board state
-		# print("in find")
-		# print(old_move)
 		allowed_cells = []
 		allowed_small_board = [old_move[1]%3, old_move[2]%3]
 	#checks if the move is a free move or not based on the rules
@@ -33,66 +118,37 @@ class MyPlayer():
 						for j in range(3*allowed_small_board[1], 3*allowed_small_board[1]+3):
 							if board.big_boards_status[k][i][j] == '-':
 								allowed_cells.append((k,i,j))
-
 		return allowed_cells
 	
 	def heuristic(self,board,flg):
 
 		cross_score = 0
 		oval_score = 0
-		# print len(board.big_boards_status)
-		for i in range(9):
-			for k in range(2):
-				for j in range(9):
-					#center square of any board
-					if i %3 == 1 and j%3==1:
-						if board.big_boards_status[k][i][j] == 'x':
-							cross_score += 3
-						if board.big_boards_status[k][i][j] == 'o':
-							oval_score += 3
-					elif (i %3 ==1 and j%3 != 1) or (i%3!=1 and j%3==1):
-						pass
-					else:
-						if board.big_boards_status[k][i][j] == 'x':
-							cross_score += 2
-						if board.big_boards_status[k][i][j] == 'o':
-							oval_score += 2
-					
-					#center square of full board
-
-					if i == 4 and j == 4:
-						if board.big_boards_status[k][i][j] == 'x':
-							cross_score += 3
-						if board.big_boards_status[k][i][j] == 'o':
-							oval_score += 3
-
 		for i in range(3):
 			for k in range(2):	
 				for j in range(3):
-
-					if board.small_boards_status[k][i][j] == 'x':
-						cross_score += 5
-					if board.small_boards_status[k][i][j] == 'o':
-						oval_score += 5
-						
-
-
+					#centre
 					if i==1 and j==1:
 						if board.small_boards_status[k][i][j] == 'x':
-							cross_score += 10
+							cross_score += 5
 						if board.small_boards_status[k][i][j] == 'o':
-							oval_score += 10 
+							oval_score += 5 
 
+					#middle
 					elif (i %3==1 and j %3 !=1) or (i%3!=1 and j%3==1):
-						pass
-					else:
 						if board.small_boards_status[k][i][j] == 'x':
 							cross_score += 3
 						if board.small_boards_status[k][i][j] == 'o':
-							oval_score += 3
+							oval_score += 3 
+					#corner
+					else:
+						if board.small_boards_status[k][i][j] == 'x':
+							cross_score += 4
+						if board.small_boards_status[k][i][j] == 'o':
+							oval_score += 4
 
 		# print cross_score,oval_score
-		if(flg == 'o') :
+		if(flg == 'o'):
 			return oval_score - cross_score
 		else : 
 			return cross_score - oval_score
@@ -103,7 +159,7 @@ class MyPlayer():
 			flg2 = 'x'
 		if dep == 2 :
 			return self.heuristic(cur_board,flg) 
-		elif dep == 1 :
+		elif dep % 2 == 1 :
 			allowed_cells = self.find_valid_move_cells(cur_board,old_move)
 			mn = -inf
 			mnx = 0
@@ -115,13 +171,35 @@ class MyPlayer():
 					y = allowed_cells[i][1]
 					z = allowed_cells[i][2]
 					cur_board.big_boards_status[x][y][z]=flg 
-					val = self.minmax(cur_board,flg2,(x,y,z),dep+1)
+					temp_board = ([['-' for i in range(3)] for j in range(3)])
+					sty = y/3
+					stz = z/3
+					temp_board = ""
+
+					for i in range(3):
+						for j in range(3):
+							temp_board += cur_board.big_boards_status[x][3*sty+i][3*stz+j]
+					temp_board=self.change(temp_board,9,flg2)
+					
+					score = self.small_board_score[temp_board]
+					
+					if(flg=='x'):
+						score =  -score						
+					if score == 50 :
+						cur_board.small_boards_status[x][sty][stz] = flg
+					elif score == -50:
+						cur_board.small_boards_status[x][sty][stz] = flg2
+					else :
+						cur_board.small_boards_status[x][sty][stz] = 'd'
+					
+					val = self.minmax(cur_board,(x,y,z),flg2,dep+1)
 					if val < mn:
 						mn = val
 						mnx = x 
 						mny = y
 						mnz = z
 					cur_board.big_boards_status[x][y][z]='-'
+					cur_board.small_boards_status[x][sty][stz] = '-'					
 				return (x,y,z)
 		else :
 			allowed_cells = self.find_valid_move_cells(cur_board,old_move)
@@ -135,6 +213,27 @@ class MyPlayer():
 					y = allowed_cells[i][1]
 					z = allowed_cells[i][2]
 					cur_board.big_boards_status[x][y][z]=flg 
+					temp_board = ([['-' for i in range(3)] for j in range(3)])
+					sty = y/3
+					stz = z/3
+					temp_board = ""
+
+					for i in range(3):
+						for j in range(3):
+							temp_board += cur_board.big_boards_status[x][3*sty+i][3*stz+j]
+					temp_board=self.change(temp_board,9,flg2)
+					
+					score = self.small_board_score[temp_board]
+					
+					if(flg=='x'):
+						score =  -score						
+					if score == 50 :
+						cur_board.small_boards_status[x][sty][stz] = flg
+					elif score == -50:
+						cur_board.small_boards_status[x][sty][stz] = flg2
+					else :
+						cur_board.small_boards_status[x][sty][stz] = 'd'
+					
 					val = self.minmax(cur_board,(x,y,z),flg2,dep+1)
 					if val > mx:
 						mx = val
@@ -142,12 +241,13 @@ class MyPlayer():
 						mxy = y
 						mxz = z
 					cur_board.big_boards_status[x][y][z]='-'
+					cur_board.small_boards_status[x][sty][stz] = '-'					
 				return (x,y,z)
 
 
 
 	def move(self,board,old_move,flg):
-		cur_board = copy.copy(board)
+		cur_board = copy.deepcopy(board)
 		cur_move = self.minmax(cur_board,old_move,flg,0)
 		x = cur_move[0]
 		y = cur_move[1]
@@ -156,5 +256,5 @@ class MyPlayer():
 
 
 # board = BigBoard()
-# player = MyPlayer()
+player = MyPlayer()
 # player.heuristic(board)

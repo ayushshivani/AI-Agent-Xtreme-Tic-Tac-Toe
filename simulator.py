@@ -17,6 +17,7 @@ import time
 import copy
 import traceback
 from agent import MyPlayer
+from sanchit import MyPlayer
 TIME = 24
 MAX_PTS = 86
 
@@ -263,6 +264,7 @@ def gameplay(obj1, obj2):				#game simulator
 	signal.signal(signal.SIGALRM, handler)
 	while(1):
 		#player 1 turn
+		# time.sleep(3)
 		p1_move, WINNER, MESSAGE, pts1, pts2, to_break, small_board_won = player_turn(game_board, old_move, obj1, "P1", "P2", fl1)
 
 		if to_break:
@@ -281,10 +283,12 @@ def gameplay(obj1, obj2):				#game simulator
 			game_board.print_board()			
 
 		#do the same thing for player 2
+		# time.sleep(3)
 		p2_move, WINNER, MESSAGE, pts1, pts2, to_break, small_board_won = player_turn(game_board, old_move, obj2, "P2", "P1", fl2)
 
 		if to_break:
 			break
+
 
 		game_board.print_board()
 		old_move = p2_move
@@ -375,8 +379,8 @@ if __name__ == '__main__':
 		obj1 = Manual_Player()
 		obj2 = Manual_Player()
 	elif option == '4':
-		obj1 = MyPlayer()
-		obj2 = Random_Player()
+		obj1 = Random_Player()
+		obj2 = MyPlayer()
 	else:
 		print 'Invalid option'
 		sys.exit(1)

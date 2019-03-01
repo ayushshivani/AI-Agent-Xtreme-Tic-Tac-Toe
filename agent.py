@@ -3,6 +3,8 @@ import random
 import signal
 import time
 import copy
+# from simulator import BigBoard
+
 inf = 10000000000
 class MyPlayer():
 
@@ -35,7 +37,70 @@ class MyPlayer():
 		return allowed_cells
 	
 	def heuristic(self,board):
-		return 1
+
+		cross_score = 0
+		oval_score = 0
+		# print len(board.big_boards_status)
+		for i in range(9):
+			for k in range(2):
+				for j in range(9):
+					#center square of any board
+					if i %3 == 1 and j%3==1:
+						if board.big_boards_status[k][i][j] == 'x':
+							cross_score += 3
+						if board.big_boards_status[k][i][j] == 'o':
+							oval_score += 3
+					elif (i %3 ==1 and j%3 != 1) or (i%3!=1 and j%3==1):
+						pass
+					else:
+						if board.big_boards_status[k][i][j] == 'x':
+							cross_score += 2
+						if board.big_boards_status[k][i][j] == 'o':
+							oval_score += 2
+					
+					#center square of full board
+
+					if i == 4 and j == 4:
+						if board.big_boards_status[k][i][j] == 'x':
+							cross_score += 3
+						if board.big_boards_status[k][i][j] == 'o':
+							oval_score += 3
+
+
+		
+		for i in range(3):
+			for k in range(2):
+				for j in range(3):
+
+					if board.small_boards_status[k][i][j] == 'x':
+						cross_score += 5
+					if board.small_boards_status[k][i][j] == 'o':
+						oval_score += 5
+						
+
+
+					if i==1 and j==1:
+						if board.small_boards_status[k][i][j] == 'x':
+							cross_score += 10
+						if board.small_boards_status[k][i][j] == 'o':
+							oval_score += 10 
+
+					elif (i %3==1 and j %3 !=1) or (i%3!=1 and j%3==1):
+						pass
+					else:
+						if board.small_boards_status[k][i][j] == 'x':
+							cross_score += 3
+						if board.small_boards_status[k][i][j] == 'o':
+							oval_score += 3
+
+
+
+		# print cross_score,oval_score
+
+
+
+
+		return oval_score
 
 	def minmax(self,cur_board,old_move,dep):
 		print(2)
@@ -94,3 +159,8 @@ class MyPlayer():
 		z = cur_move[2]
 		print(x,y,z)
 		return (x,y,z)
+
+
+# board = BigBoard()
+# player = MyPlayer()
+# player.heuristic(board)

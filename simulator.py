@@ -385,11 +385,14 @@ if __name__ == '__main__':
 		obj1 = Random_Player()
 		obj2 = MyPlayer()
 	elif option == '5':
-		obj2 = Team26()
 		obj1 = MyPlayer()
+		obj2 = Team162()
 	elif option == '6':
 		obj1 = MyPlayer()
 		obj2 = bot3()
+	elif option == '7':
+		obj1 = Team26()
+		obj2 = MyPlayer()
 	else:
 		print 'Invalid option'
 		sys.exit(1)

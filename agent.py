@@ -120,20 +120,68 @@ class MyPlayer():
 							if board.big_boards_status[k][i][j] == '-':
 								allowed_cells.append((k,i,j))
 		return allowed_cells
+
+
+	def checking_win(self,bs,flg):
+		score = 0
+		no_x = 0 
+		no_o = 0
+		for k in range(2):
+			for i in range(3):
+						#checking for horizontal pattern(i'th row)
+				if (bs[k][i][0] == bs[k][i][1] == bs[k][i][2]) and (bs[k][i][0] == 'o'):
+					score = 10000
+				if (bs[k][i][0] == bs[k][i][1] == bs[k][i][2]) and (bs[k][i][0] == 'x'):
+					score = -10000
+				#checking for vertical pattern(i'th column)
+				if (bs[k][0][i] == bs[k][1][i] == bs[k][2][i]) and (bs[k][0][i] == 'o'):
+					score = 10000
+				if (bs[k][0][i] == bs[k][1][i] == bs[k][2][i]) and (bs[k][0][i] == 'x'):
+					score = -10000	
+			#checking for diagonal patterns
+			#diagonal 1
+			x= 0 
+			y =0
+			if (bs[k][3*x][3*y] == bs[k][3*x+1][3*y+1] == bs[k][3*x+2][3*y+2]) and (bs[k][3*x][3*y] == 'o'):
+				score = 10000
+			if (bs[k][3*x][3*y] == bs[k][3*x+1][3*y+1] == bs[k][3*x+2][3*y+2]) and (bs[k][3*x][3*y] == 'x'):
+				score = -10000
+			
+			#diagonal 2
+			if (bs[k][3*x][3*y+2] == bs[k][3*x+1][3*y+1] == bs[k][3*x+2][3*y]) and (bs[k][3*x][3*y+2] == 'o'):
+				score = 10000
+			if (bs[k][3*x][3*y+2] == bs[k][3*x+1][3*y+1] == bs[k][3*x+2][3*y]) and (bs[k][3*x][3*y+2] == 'x'):
+				score = -10000
+
+		
+		for k in range(2):
+			for i in range(3):
+				for j in range(3):
+					if bs[k][i][j] == 'x':
+						no_x += 1
+					elif bs[k][i][j] == 'o':
+						no_o += 1
+		score += 100 *(no_o - no_x)
+
+		if flg == 'o':
+			return score
+		else:
+			return -score
 	
 	def heuristic(self,board,flg):
 
 		cross_score = 0
 		oval_score = 0
+		# print(board)
 		for i in range(3):
-			for k in range(2):	
+			for k in range(2):
 				for j in range(3):
 					#centre
 					if i==1 and j==1:
 						if board.small_boards_status[k][i][j] == 'x':
-							cross_score += 5
+							cross_score += 10
 						if board.small_boards_status[k][i][j] == 'o':
-							oval_score += 5 
+							oval_score += 10
 
 					#middle
 					elif (i %3==1 and j %3 !=1) or (i%3!=1 and j%3==1):
@@ -144,21 +192,31 @@ class MyPlayer():
 					#corner
 					else:
 						if board.small_boards_status[k][i][j] == 'x':
-							cross_score += 4
+							cross_score += 6
 						if board.small_boards_status[k][i][j] == 'o':
-							oval_score += 4
+							oval_score += 6
 
-		# print cross_score,oval_score
+		
+		score = self.checking_win(board.small_boards_status,flg)
+
+		cross_score -= score
+		oval_score += score
+		print cross_score,oval_score
+	
 		if(flg == 'o'):
 			return oval_score - cross_score
 		else : 
+			# cross_score += score
+			# oval_score -= score
+			# print cross_score,oval_score
+
 			return cross_score - oval_score
 
 	def minmax(self,cur_board,old_move,flg,dep):
 		flg2 = 'o'
 		if flg == 'o' : 
 			flg2 = 'x'
-		if dep == 4 :
+		if dep == 2	 :
 			return self.heuristic(cur_board,flg) 
 		elif dep % 2 == 1 :
 			allowed_cells = self.find_valid_move_cells(cur_board,old_move)

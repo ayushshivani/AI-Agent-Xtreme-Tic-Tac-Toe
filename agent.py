@@ -4,7 +4,6 @@ import signal
 import time
 import copy
 # from simulator import BigBoard
-gdep = 3
 inf = 100000000000000000
 inf2 = 10000000000000
 class MyPlayer():
@@ -13,7 +12,12 @@ class MyPlayer():
 		pass
 		self.empty_small_board = "---------"
 		self.small_board_score = {}
+		self.small_board_score_d = {}
 		self.preprocess(self.empty_small_board)
+		self.preprocess_d(self.empty_small_board)
+		for i in range(1,10000000000):
+			pass
+		quit()
 
 	def change(self,s,i,c):
 		s = s[:i] + c + s[i+1:]
@@ -61,12 +65,10 @@ class MyPlayer():
 			return -50
 		return 0
 	def preprocess(self,bs):
-		# if bs == 'o-o-ooo-o':
-			# print bs
 		x = self.check_small_board_won_str(bs)
 		if x == 50 : 
  			self.small_board_score[bs]=(1,0,0)
- 			return (0,1,0)
+ 			return (1,0,0)
  		if x == -50 :
  			self.small_board_score[bs]=(0,1,0)
  			return (0,1,0)
@@ -76,8 +78,8 @@ class MyPlayer():
 				if bs[i] != '-' :
 					flag = flag + 1
 		if flag == 9 :
-			self.small_board_score[bs]= (0,1,0)
-			return (0,1,0)
+			self.small_board_score[bs]= (0,0,1)
+			return (0,0,1)
 
 		if bs in self.small_board_score:
 			return self.small_board_score[bs]
@@ -100,6 +102,50 @@ class MyPlayer():
 				bs = self.change(bs,i,'-')
 		self.small_board_score[bs] = (ret0,ret1,ret2)
 		return (ret0,ret1,ret2)
+	
+	def preprocess_d(self,bs):
+		x = self.check_small_board_won_str(bs)
+		if x == 50 : 
+ 			self.small_board_score_d[bs]=(1,0,0)
+ 			return (1,0,0)
+ 		if x == -50 :
+ 			self.small_board_score_d[bs]=(0,1,0)
+ 			return (0,1,0)
+		#check if board is already complete
+		flag = 0
+		for i in range(9):
+				if bs[i] != '-'  :
+					flag = flag + 1
+		if flag == 9 :
+			self.small_board_score_d[bs]= (0,0,1)
+			return (0,0,1)
+
+		if bs in self.small_board_score_d:
+			return self.small_board_score_d[bs]
+		ret0=0
+		ret1=0
+		ret2=0
+		for i in range(9):
+			if bs[i] == '-':
+				bs = self.change(bs,i,'o')
+				val = self.preprocess_d(bs)
+				ret0+=val[0]
+				ret1+=val[1]
+				ret2+=val[2]
+				bs = self.change(bs,i,'x')
+				val = self.preprocess_d(bs)
+				ret0+=val[0]
+				ret1+=val[1]
+				ret2+=val[2]
+				bs = self.change(bs,i,'d')
+				val = self.preprocess_d(bs)
+				ret0+=val[0]
+				ret1+=val[1]
+				ret2+=val[2]
+				bs = self.change(bs,i,'-')
+		self.small_board_score_d[bs] = (ret0,ret1,ret2)
+		return (ret0,ret1,ret2)
+
 
 	def find_valid_move_cells(self, board,old_move):
 	#returns the valid cells allowed given the last move and the current board state
@@ -165,8 +211,8 @@ class MyPlayer():
 							temp_board +=board.big_boards_status[k][3*i+x][3*j+y]
 					score = self.small_board_score[temp_board]
 					total = score[0] + score[1] + score[2]
-					oval_val= float(score[0])/total
-					cross_val= float(score[1])/total
+					oval_val = float(score[0])/total
+					cross_val = float(score[1])/total
 					oval_score += float(oval_val)*factor
 					cross_score += float(cross_val)*factor
 
@@ -186,10 +232,15 @@ class MyPlayer():
 		return (oval_score,cross_score)
 
 	def minmax(self,cur_board,old_move,flg,dep):
+		if time.time() - self.st_time > 15:
+			if dep == self.gdep:
+				return (-1,-1,-1) 
+			else :
+				return (-1,-1)
 		flg2 = 'o'
 		if flg == 'o' : 
 			flg2 = 'x'
-		if dep == 3	 :
+		if dep == 0	 :
 			return self.heuristic(cur_board,flg) 
 		mx = -inf
 		rx = 0
@@ -199,6 +250,12 @@ class MyPlayer():
 		allowed_cells = self.find_valid_move_cells(cur_board,old_move)
 		if allowed_cells is not None: 
 			for i in range(len(allowed_cells)):
+				if time.time() - self.st_time > 15:
+					if dep == self.gdep:
+						return (-1,-1,-1) 
+					else :
+						return (-1,-1)
+
 				x = allowed_cells[i][0]
 				y = allowed_cells[i][1]
 				z = allowed_cells[i][2]
@@ -222,7 +279,7 @@ class MyPlayer():
 				if arnav != 0  :
 					cur_board.big_boards_status[x][y][z]= '-'
 					cur_board.small_boards_status[x][sty][stz] = '-'					
-					if dep == 0:
+					if dep == self.gdep:
 						return (x,y,z)
 					elif flg == 'o': 
 						return (inf2,0)
@@ -232,9 +289,9 @@ class MyPlayer():
 				val = (0,0) 
 				
 				if another_turn == 1 :
-					val = self.minmax(cur_board,(x,y,z),flg,dep+1)
+					val = self.minmax(cur_board,(x,y,z),flg,dep-1)
 				else : 
-					val = self.minmax(cur_board,(x,y,z),flg2,dep+1)
+					val = self.minmax(cur_board,(x,y,z),flg2,dep-1)
 				cur_board.big_boards_status[x][y][z]= '-'
 				cur_board.small_boards_status[x][sty][stz] = '-'					
 				
@@ -255,37 +312,44 @@ class MyPlayer():
 						rz = z						 
 						ret = val
 		
-		if dep == 0:
+		if dep == self.gdep:
 			return (rx,ry,rz)
 		else :
 			return ret
 
 	def move(self,board,old_move,flg):
+		self.st_time = time.time()
 		cur_board = copy.deepcopy(board)
 		
-		# allowed_cells = self.find_valid_move_cells(cur_board,old_move)
-		# for i in range(len(allowed_cells)):
-		# 	x = allowed_cells[i][0]
-		# 	y = allowed_cells[i][1]
-		# 	z = allowed_cells[i][2]			
-		# 	cur_board.big_boards_status[x][y][z]=flg 
-		# 	sty = y/3
-		# 	stz = z/3
-		# 	temp_board = ([['-' for i in range(3)] for j in range(3)])
-		# 	for i in range(3):
-		# 		for j in range(3):
-		# 			temp_board[i][j]= cur_board.big_boards_status[x][3*sty+i][3*stz+j]
-		# 	another_turn = 0
-		# 	val2 = self.check_small_board_won_matrix(temp_board)
-		# 	if val2 != 0 :
-		# 		return(x,y,z)
-		# 	cur_board.big_boards_status[x][y][z]='-' 
-
-		cur_move = self.minmax(cur_board,old_move,flg,0)
-		x = cur_move[0]
-		y = cur_move[1]
-		z = cur_move[2]
-		print(x,y,z)
+		allowed_cells = self.find_valid_move_cells(cur_board,old_move)
+		for i in range(len(allowed_cells)):
+			x = allowed_cells[i][0]
+			y = allowed_cells[i][1]
+			z = allowed_cells[i][2]			
+			cur_board.big_boards_status[x][y][z]=flg 
+			sty = y/3
+			stz = z/3
+			temp_board = ([['-' for i in range(3)] for j in range(3)])
+			for i in range(3):
+				for j in range(3):
+					temp_board[i][j]= cur_board.big_boards_status[x][3*sty+i][3*stz+j]
+			another_turn = 0
+			val2 = self.check_small_board_won_matrix(temp_board)
+			if val2 != 0 :
+				return(x,y,z)
+			cur_board.big_boards_status[x][y][z]='-' 
+		
+		x=0
+		y=0
+		z=0
+		for i in range(1,100):
+			self.gdep = i
+			cur_move = self.minmax(cur_board,old_move,flg,i)
+			if time.time()-self.st_time > 15 :
+				return (x,y,z)
+			x = cur_move[0]
+			y = cur_move[1]
+			z = cur_move[2]
 		return (x,y,z)
 
 

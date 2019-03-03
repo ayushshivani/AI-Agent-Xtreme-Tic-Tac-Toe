@@ -5,8 +5,7 @@ import time
 import copy
 # from simulator import BigBoard
 gdep = 3
-inf = 100000000000000000
-inf2 = 10000000000000
+inf = 10000000000000.0
 class MyPlayer():
 	
 	def __init__(self):
@@ -125,6 +124,7 @@ class MyPlayer():
 
 	def print_board(self,board):
 		# for printing the state of the board
+		print '================BigBoard State================'
 		for i in range(9):
 			if i%3 == 0:
 				print
@@ -138,6 +138,7 @@ class MyPlayer():
 			print
 		print
 
+		print '==============SmallBoards States=============='
 		for i in range(3):
 			for k in range(2):
 				for j in range(3):
@@ -145,10 +146,55 @@ class MyPlayer():
 				if k==0:
 					print "  ",
 			print
+		print '=============================================='
 		print
 		print
 
+	def checking_win(self,bs,flg):
+		score = 0
+		no_x = 0 
+		no_o = 0
+		oval_score = 0
+		cross_score = 0 
+		for k in range(2):
+			for i in range(3):
+						#checking for horizontal pattern(i'th row)
+				if (bs[k][i][0] == bs[k][i][1] == bs[k][i][2]) and (bs[k][i][0] == 'o'):
+					oval_score = 10000
+				if (bs[k][i][0] == bs[k][i][1] == bs[k][i][2]) and (bs[k][i][0] == 'x'):
+					cross_score = 10000
+				#checking for vertical pattern(i'th column)
+				if (bs[k][0][i] == bs[k][1][i] == bs[k][2][i]) and (bs[k][0][i] == 'o'):
+					oval_score = 10000
+				if (bs[k][0][i] == bs[k][1][i] == bs[k][2][i]) and (bs[k][0][i] == 'x'):
+					cross_score = 10000	
+			#checking for diagonal patterns
+			#diagonal 1
+			x= 0 
+			y =0
+			if (bs[k][3*x][3*y] == bs[k][3*x+1][3*y+1] == bs[k][3*x+2][3*y+2]) and (bs[k][3*x][3*y] == 'o'):
+				oval_score = 10000
+			if (bs[k][3*x][3*y] == bs[k][3*x+1][3*y+1] == bs[k][3*x+2][3*y+2]) and (bs[k][3*x][3*y] == 'x'):
+				cross_score = 10000
+			
+			#diagonal 2
+			if (bs[k][3*x][3*y+2] == bs[k][3*x+1][3*y+1] == bs[k][3*x+2][3*y]) and (bs[k][3*x][3*y+2] == 'o'):
+				oval_score = 10000
+			if (bs[k][3*x][3*y+2] == bs[k][3*x+1][3*y+1] == bs[k][3*x+2][3*y]) and (bs[k][3*x][3*y+2] == 'x'):
+				cross_score = 10000
 
+		
+		for k in range(2):
+			for i in range(3):
+				for j in range(3):
+					if bs[k][i][j] == 'x':
+						no_x += 1
+					elif bs[k][i][j] == 'o':
+						no_o += 1
+		oval_score += 100 *no_o
+		cross_score += 100*no_x
+
+		return (oval_score,cross_score)
 
 	def heuristic(self,board,flg):
 
@@ -189,7 +235,7 @@ class MyPlayer():
 		flg2 = 'o'
 		if flg == 'o' : 
 			flg2 = 'x'
-		if dep == 3	 :
+		if dep == gdep	 :
 			return self.heuristic(cur_board,flg) 
 		mx = -inf
 		rx = 0
@@ -208,35 +254,25 @@ class MyPlayer():
 				temp_board = ([['-' for i in range(3)] for j in range(3)])
 				for i in range(3):
 					for j in range(3):
-						temp_board[i][j] = cur_board.big_boards_status[x][3*sty+i][3*stz+j]
-			
-				another_turn = 0	
-			
+						temp_board[i][j]= cur_board.big_boards_status[x][3*sty+i][3*stz+j]
+				another_turn = 0
 				val2 = self.check_small_board_won_matrix(temp_board)
 				if val2 != 0 :
 					cur_board.small_boards_status[x][sty][stz] = flg
 					another_turn = 1
-				
-				arnav = self.check_small_board_won_matrix(cur_board.big_boards_status[x]) 
-				
-				if arnav != 0  :
-					cur_board.big_boards_status[x][y][z]= '-'
-					cur_board.small_boards_status[x][sty][stz] = '-'					
+
+				if self.check_small_board_won_matrix(cur_board.small_boards_status[x]) != 0 :
 					if dep == 0:
-						return (x,y,z)
+						ret(x,y,z)
 					elif flg == 'o': 
-						return (inf2,0)
+						return (inf,0)
 					else :
-						return (0,inf2)
-				
-				val = (0,0) 
-				
-				if another_turn == 1 :
+						return (0,inf)	
+				val = 0 
+				if(another_turn == 1 ):
 					val = self.minmax(cur_board,(x,y,z),flg,dep+1)
 				else : 
 					val = self.minmax(cur_board,(x,y,z),flg2,dep+1)
-				cur_board.big_boards_status[x][y][z]= '-'
-				cur_board.small_boards_status[x][sty][stz] = '-'					
 				
 				score = val[0] - val[1]
 				if flg == 'o' :
@@ -254,6 +290,8 @@ class MyPlayer():
 						ry = y
 						rz = z						 
 						ret = val
+				cur_board.big_boards_status[x][y][z]='-'
+				cur_board.small_boards_status[x][sty][stz] = '-'					
 		
 		if dep == 0:
 			return (rx,ry,rz)
@@ -263,29 +301,28 @@ class MyPlayer():
 	def move(self,board,old_move,flg):
 		cur_board = copy.deepcopy(board)
 		
-		# allowed_cells = self.find_valid_move_cells(cur_board,old_move)
-		# for i in range(len(allowed_cells)):
-		# 	x = allowed_cells[i][0]
-		# 	y = allowed_cells[i][1]
-		# 	z = allowed_cells[i][2]			
-		# 	cur_board.big_boards_status[x][y][z]=flg 
-		# 	sty = y/3
-		# 	stz = z/3
-		# 	temp_board = ([['-' for i in range(3)] for j in range(3)])
-		# 	for i in range(3):
-		# 		for j in range(3):
-		# 			temp_board[i][j]= cur_board.big_boards_status[x][3*sty+i][3*stz+j]
-		# 	another_turn = 0
-		# 	val2 = self.check_small_board_won_matrix(temp_board)
-		# 	if val2 != 0 :
-		# 		return(x,y,z)
-		# 	cur_board.big_boards_status[x][y][z]='-' 
+		allowed_cells = self.find_valid_move_cells(cur_board,old_move)
+		for i in range(len(allowed_cells)):
+			x = allowed_cells[i][0]
+			y = allowed_cells[i][1]
+			z = allowed_cells[i][2]			
+			cur_board.big_boards_status[x][y][z]=flg 
+			sty = y/3
+			stz = z/3
+			temp_board = ([['-' for i in range(3)] for j in range(3)])
+			for i in range(3):
+				for j in range(3):
+					temp_board[i][j]= cur_board.big_boards_status[x][3*sty+i][3*stz+j]
+			another_turn = 0
+			val2 = self.check_small_board_won_matrix(temp_board)
+			if val2 != 0 :
+				return(x,y,z)
+			cur_board.big_boards_status[x][y][z]='-' 
 
 		cur_move = self.minmax(cur_board,old_move,flg,0)
 		x = cur_move[0]
 		y = cur_move[1]
 		z = cur_move[2]
-		print(x,y,z)
 		return (x,y,z)
 
 

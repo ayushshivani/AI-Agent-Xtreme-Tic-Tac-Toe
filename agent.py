@@ -4,7 +4,7 @@ import signal
 import time
 import copy
 # from simulator import BigBoard
-
+gdep = 4
 inf = 10000000000
 class MyPlayer():
 	
@@ -19,9 +19,7 @@ class MyPlayer():
 	def change(self,s,i,c):
 		s = s[:i] + c + s[i+1:]
 		return s
-
-	def preprocess(self,bs):
-		#checking for vertical pattern
+	def check_small_board_won(self,bs):
 		for i in range(3):
 			if (bs[i] == bs[3+i] == bs[6+i]) and (bs[i] == 'o'):
 				self.small_board_score[bs]=50
@@ -51,8 +49,14 @@ class MyPlayer():
 		if (bs[2] == bs[4] == bs[6]) and (bs[2] == 'x'):
 			self.small_board_score[bs]=-50
 			return -50
-		if bs in self.small_board_score:
-			return self.small_board_score[bs]
+		return 0
+	def preprocess(self,bs):
+	
+		x = self.check_small_board_won(bs)
+		if  x == 50 or x == -50
+ 			self.small_board_score[bs]=x
+			return x
+
 		#check if board is already complete
 		flag = 0
 		for i in range(9):
@@ -126,32 +130,34 @@ class MyPlayer():
 		score = 0
 		no_x = 0 
 		no_o = 0
+		oval_score = 0
+		cross_score = 0 
 		for k in range(2):
 			for i in range(3):
 						#checking for horizontal pattern(i'th row)
 				if (bs[k][i][0] == bs[k][i][1] == bs[k][i][2]) and (bs[k][i][0] == 'o'):
-					score = 10000
+					oval_score = 10000
 				if (bs[k][i][0] == bs[k][i][1] == bs[k][i][2]) and (bs[k][i][0] == 'x'):
-					score = -10000
+					cross_score = 10000
 				#checking for vertical pattern(i'th column)
 				if (bs[k][0][i] == bs[k][1][i] == bs[k][2][i]) and (bs[k][0][i] == 'o'):
-					score = 10000
+					oval_score = 10000
 				if (bs[k][0][i] == bs[k][1][i] == bs[k][2][i]) and (bs[k][0][i] == 'x'):
-					score = -10000	
+					cross_score = 10000	
 			#checking for diagonal patterns
 			#diagonal 1
 			x= 0 
 			y =0
 			if (bs[k][3*x][3*y] == bs[k][3*x+1][3*y+1] == bs[k][3*x+2][3*y+2]) and (bs[k][3*x][3*y] == 'o'):
-				score = 10000
+				oval_score = 10000
 			if (bs[k][3*x][3*y] == bs[k][3*x+1][3*y+1] == bs[k][3*x+2][3*y+2]) and (bs[k][3*x][3*y] == 'x'):
-				score = -10000
+				cross_score = 10000
 			
 			#diagonal 2
 			if (bs[k][3*x][3*y+2] == bs[k][3*x+1][3*y+1] == bs[k][3*x+2][3*y]) and (bs[k][3*x][3*y+2] == 'o'):
-				score = 10000
+				oval_score = 10000
 			if (bs[k][3*x][3*y+2] == bs[k][3*x+1][3*y+1] == bs[k][3*x+2][3*y]) and (bs[k][3*x][3*y+2] == 'x'):
-				score = -10000
+				cross_score = 10000
 
 		
 		for k in range(2):
@@ -161,12 +167,10 @@ class MyPlayer():
 						no_x += 1
 					elif bs[k][i][j] == 'o':
 						no_o += 1
-		score += 100 *(no_o - no_x)
+		oval_score += 100 *no_o
+		cross_score += 100*no_x
 
-		if flg == 'o':
-			return score
-		else:
-			return -score
+		return (oval_score,cross_score)
 	
 	def heuristic(self,board,flg):
 
@@ -199,26 +203,22 @@ class MyPlayer():
 		
 		score = self.checking_win(board.small_boards_status,flg)
 
-		cross_score -= score
-		oval_score += score
+		oval_score += score[0]
+		cross_score += score[1]
 		print cross_score,oval_score
 	
 		if(flg == 'o'):
 			return oval_score - cross_score
 		else : 
-			# cross_score += score
-			# oval_score -= score
-			# print cross_score,oval_score
-
 			return cross_score - oval_score
 
-	def minmax(self,cur_board,old_move,flg,dep):
+	def minmax(self,cur_board,old_move,flg,dep,turn):
 		flg2 = 'o'
 		if flg == 'o' : 
 			flg2 = 'x'
-		if dep == 2	 :
+		if dep == gdep	 :
 			return self.heuristic(cur_board,flg) 
-		elif dep % 2 == 1 :
+		elif turn % 2 == 1 :
 			allowed_cells = self.find_valid_move_cells(cur_board,old_move)
 			mn = -inf
 			mnx = 0
@@ -230,28 +230,24 @@ class MyPlayer():
 					y = allowed_cells[i][1]
 					z = allowed_cells[i][2]
 					cur_board.big_boards_status[x][y][z]=flg 
-					temp_board = ([['-' for i in range(3)] for j in range(3)])
 					sty = y/3
 					stz = z/3
-					temp_board = ""
-
 					for i in range(3):
 						for j in range(3):
-							temp_board += cur_board.big_boards_status[x][3*sty+i][3*stz+j]
-					temp_board=self.change(temp_board,9,flg2)
+							temp_board2[i][j]= cur_board.big_boards_status[x][3*sty+i][3*stz+j]
+					temp_board2 = ([['-' for i in range(3)] for j in range(3)])
+					another_turn = 0
+					val2 = self.check_small_board_won(temp_board2)
+					if val2 != 0 :
+						another_turn = 1
 					
-					score = self.small_board_score[temp_board]
-					
-					if(flg=='x'):
-						score =  -score						
-					if score == 50 :
-						cur_board.small_boards_status[x][sty][stz] = flg
-					elif score == -50:
-						cur_board.small_boards_status[x][sty][stz] = flg2
-					else :
-						cur_board.small_boards_status[x][sty][stz] = 'd'
-					
-					val = self.minmax(cur_board,(x,y,z),flg2,dep+1)
+
+					val = 0 
+					if(another_turn == 1 ):
+						val = self.minmax(cur_board,(x,y,z),flg,dep+1,turn)
+					else : 
+						val = self.minmax(cur_board,(x,y,z),flg2,dep+1,1-turn)
+
 					if val < mn:
 						mn = val
 						mnx = x 
@@ -272,27 +268,22 @@ class MyPlayer():
 					y = allowed_cells[i][1]
 					z = allowed_cells[i][2]
 					cur_board.big_boards_status[x][y][z]=flg 
-					temp_board = ([['-' for i in range(3)] for j in range(3)])
 					sty = y/3
 					stz = z/3
-					temp_board = ""
-
 					for i in range(3):
 						for j in range(3):
-							temp_board += cur_board.big_boards_status[x][3*sty+i][3*stz+j]
-					temp_board=self.change(temp_board,9,flg2)
-					
-					score = self.small_board_score[temp_board]
-					
-					if(flg=='x'):
-						score =  -score						
-					if score == 50 :
-						cur_board.small_boards_status[x][sty][stz] = flg
-					elif score == -50:
-						cur_board.small_boards_status[x][sty][stz] = flg2
-					else :
-						cur_board.small_boards_status[x][sty][stz] = 'd'
-					
+							temp_board2[i][j]= cur_board.big_boards_status[x][3*sty+i][3*stz+j]					
+					temp_board2 = ([['-' for i in range(3)] for j in range(3)])
+					another_turn = 0
+					val2 = self.check_small_board_won(temp_board2)
+					if val2 != 0 :
+						another_turn = 1
+
+					val = 0 
+					if(another_turn == 1 ):
+						val = self.minmax(cur_board,(x,y,z),flg,dep+1,turn)
+					else : 
+						val = self.minmax(cur_board,(x,y,z),flg2,dep+1,1-turn)					
 					val = self.minmax(cur_board,(x,y,z),flg2,dep+1)
 					if val > mx:
 						mx = val

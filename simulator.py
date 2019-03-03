@@ -388,8 +388,8 @@ if __name__ == '__main__':
 		obj1 = MyPlayer()
 		obj2 = Team162()
 	elif option == '6':
-		obj1 = MyPlayer()
-		obj2 = bot3()
+		obj2 = MyPlayer()
+		obj1 = bot3()
 	elif option == '7':
 		obj1 = Team26()
 		obj2 = MyPlayer()

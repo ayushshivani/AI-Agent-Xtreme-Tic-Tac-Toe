@@ -173,6 +173,15 @@ class MyPlayer():
 		return (oval_score,cross_score)
 	
 	def check_small_board_score(self,bs):
+
+
+		cross_score = 0
+		oval_score = 0
+		# print(board)
+		a4 = 400
+		a3 = 300
+		a2 = 200
+		a1 = 100
 		# middle zero and corner  
 		if bs[1][1] == 'x':
 			if bs[0][0] == 'x' or bs[0][2] == 'x' or bs[2][0] == 'x' or bs[2][2] == 'x':
@@ -240,90 +249,105 @@ class MyPlayer():
 		a2 = 200
 		a1 = 100
 
-		for k in range(2):
-			# middle zero and corner  
-			if board.small_boards_status[k][1][1] == 'x':
-				if board.small_boards_status[k][0][0] == 'x' or board.small_boards_status[k][0][2] == 'x' or board.small_boards_status[k][2][0] == 'x' or board.small_boards_status[k][2][2] == 'x':
-					cross_score += a4
+		# for k in range(2):
+		# 	# middle zero and corner  
+		# 	if board.small_boards_status[k][1][1] == 'x':
+		# 		if board.small_boards_status[k][0][0] == 'x' or board.small_boards_status[k][0][2] == 'x' or board.small_boards_status[k][2][0] == 'x' or board.small_boards_status[k][2][2] == 'x':
+		# 			cross_score += a4
 
-			if board.small_boards_status[k][1][1] == 'o':
-				if board.small_boards_status[k][0][0] == 'o' or board.small_boards_status[k][0][2] == 'o' or board.small_boards_status[k][2][0] == 'o' or board.small_boards_status[k][2][2] == 'o':
-					oval_score += a4
-
-
-			# middle and corner d
-			if board.small_boards_status[k][1][1] == 'x':
-				if board.small_boards_status[k][0][1] == 'x' or board.small_boards_status[k][1][0] == 'x' or board.small_boards_status[k][1][2] == 'x' or board.small_boards_status[k][2][1] == 'x':
-					cross_score += a2
+		# 	if board.small_boards_status[k][1][1] == 'o':
+		# 		if board.small_boards_status[k][0][0] == 'o' or board.small_boards_status[k][0][2] == 'o' or board.small_boards_status[k][2][0] == 'o' or board.small_boards_status[k][2][2] == 'o':
+		# 			oval_score += a4
 
 
-			if board.small_boards_status[k][1][1] == 'o':
-				if board.small_boards_status[k][0][1] == 'o' or board.small_boards_status[k][1][0] == 'o' or board.small_boards_status[k][1][2] == 'o' or board.small_boards_status[k][2][1] == 'o':
-					oval_score += a2
-
-			#corner and middle middle
-			if board.small_boards_status[k][0][1] == 'x':
-				if board.small_boards_status[k][0][0] == 'x' or board.small_boards_status[k][0][2] == 'x':cross_score += a1
-
-			if board.small_boards_status[k][2][1] == 'x':
-				if board.small_boards_status[k][2][0] == 'x' or board.small_boards_status[k][2][2] == 'x':cross_score += a1
-
-			if board.small_boards_status[k][0][1] == 'o':
-				if board.small_boards_status[k][0][0] == 'o' or board.small_boards_status[k][0][2] == 'o':
-					oval_score += a1
-
-			if board.small_boards_status[k][2][1] == 'o':
-				if board.small_boards_status[k][2][0] == 'o' or board.small_boards_status[k][2][2] == 'o':oval_score += a1
-
-			#vertical
-
-			if board.small_boards_status[k][1][0] == 'x':
-				if board.small_boards_status[k][0][0] == 'x' or board.small_boards_status[k][2][0] == 'x':cross_score += a1
-
-			if board.small_boards_status[k][1][2] == 'x':
-				if board.small_boards_status[k][0][2] == 'x' or board.small_boards_status[k][2][2] == 'x':cross_score += a1
-
-			if board.small_boards_status[k][1][0] == 'o':
-				if board.small_boards_status[k][0][0] == 'o' or board.small_boards_status[k][2][0] == 'o':
-					oval_score += a1
-
-			if board.small_boards_status[k][1][2] == 'o':
-				if board.small_boards_status[k][0][2] == 'o' or board.small_boards_status[k][2][2] == 'o':oval_score += a1
+		# 	# middle and corner d
+		# 	if board.small_boards_status[k][1][1] == 'x':
+		# 		if board.small_boards_status[k][0][1] == 'x' or board.small_boards_status[k][1][0] == 'x' or board.small_boards_status[k][1][2] == 'x' or board.small_boards_status[k][2][1] == 'x':
+		# 			cross_score += a2
 
 
+		# 	if board.small_boards_status[k][1][1] == 'o':
+		# 		if board.small_boards_status[k][0][1] == 'o' or board.small_boards_status[k][1][0] == 'o' or board.small_boards_status[k][1][2] == 'o' or board.small_boards_status[k][2][1] == 'o':
+		# 			oval_score += a2
+
+		# 	#corner and middle middle
+		# 	if board.small_boards_status[k][0][1] == 'x':
+		# 		if board.small_boards_status[k][0][0] == 'x' or board.small_boards_status[k][0][2] == 'x':cross_score += a1
+
+		# 	if board.small_boards_status[k][2][1] == 'x':
+		# 		if board.small_boards_status[k][2][0] == 'x' or board.small_boards_status[k][2][2] == 'x':cross_score += a1
+
+		# 	if board.small_boards_status[k][0][1] == 'o':
+		# 		if board.small_boards_status[k][0][0] == 'o' or board.small_boards_status[k][0][2] == 'o':
+		# 			oval_score += a1
+
+		# 	if board.small_boards_status[k][2][1] == 'o':
+		# 		if board.small_boards_status[k][2][0] == 'o' or board.small_boards_status[k][2][2] == 'o':oval_score += a1
+
+		# 	#vertical
+
+		# 	if board.small_boards_status[k][1][0] == 'x':
+		# 		if board.small_boards_status[k][0][0] == 'x' or board.small_boards_status[k][2][0] == 'x':cross_score += a1
+
+		# 	if board.small_boards_status[k][1][2] == 'x':
+		# 		if board.small_boards_status[k][0][2] == 'x' or board.small_boards_status[k][2][2] == 'x':cross_score += a1
+
+		# 	if board.small_boards_status[k][1][0] == 'o':
+		# 		if board.small_boards_status[k][0][0] == 'o' or board.small_boards_status[k][2][0] == 'o':
+		# 			oval_score += a1
+
+		# 	if board.small_boards_status[k][1][2] == 'o':
+		# # 		if board.small_boards_status[k][0][2] == 'o' or board.small_boards_status[k][2][2] == 'o':oval_score += a1
 
 
+
+
+
+		# for i in range(3):
+		# 	for k in range(2):
+		# 		for j in range(3):
+		# 			#centre
+		# 			if i==1 and j==1:
+		# 				if board.small_boards_status[k][i][j] == 'x':
+		# 					cross_score += 10
+		# 				if board.small_boards_status[k][i][j] == 'o':
+		# 					oval_score += 10
+
+		# 			#middle
+		# 			elif (i %3==1 and j %3 !=1) or (i%3!=1 and j%3==1):
+		# 				if board.small_boards_status[k][i][j] == 'x':
+		# 					cross_score += 3
+		# 				if board.small_boards_status[k][i][j] == 'o':
+		# 					oval_score += 3 
+		# 			#corner
+		# 			else:
+		# 				if board.small_boards_status[k][i][j] == 'x':
+		# 					cross_score += 6
+		# 				if board.small_boards_status[k][i][j] == 'o':
+		# 					oval_score += 6
+
+		
+		# score = self.checking_win(board.small_boards_status,flg)
+
+		# oval_score += score[0]
+		# cross_score += score[1]
+		# print cross_score,oval_score
 
 		for i in range(3):
 			for k in range(2):
 				for j in range(3):
-					#centre
-					if i==1 and j==1:
-						if board.small_boards_status[k][i][j] == 'x':
-							cross_score += 10
-						if board.small_boards_status[k][i][j] == 'o':
-							oval_score += 10
+					score  = self.check_small_board_score(board.big_boards_status[k][i:i+2][j:j+2])
+					oval_score += score[0]
+					cross_score += score[1]
 
-					#middle
-					elif (i %3==1 and j %3 !=1) or (i%3!=1 and j%3==1):
-						if board.small_boards_status[k][i][j] == 'x':
-							cross_score += 3
-						if board.small_boards_status[k][i][j] == 'o':
-							oval_score += 3 
-					#corner
-					else:
-						if board.small_boards_status[k][i][j] == 'x':
-							cross_score += 6
-						if board.small_boards_status[k][i][j] == 'o':
-							oval_score += 6
 
-		
-		score = self.checking_win(board.small_boards_status,flg)
+		for k in range(2):
+			score = self.check_small_board_score(board.small_boards_status[k])
+			oval_score += 100*score[0]
+			cross_score += 100*score[1]
 
-		oval_score += score[0]
-		cross_score += score[1]
-		print cross_score,oval_score
-	
+
+
 		if(flg == 'o'):
 			return oval_score - cross_score
 		else : 

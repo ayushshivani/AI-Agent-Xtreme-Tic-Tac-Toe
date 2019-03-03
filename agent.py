@@ -171,7 +171,8 @@ class MyPlayer():
 		cross_score += 100*no_x
 
 		return (oval_score,cross_score)
-	
+
+
 	def heuristic(self,board,flg):
 
 		cross_score = 0
@@ -277,83 +278,50 @@ class MyPlayer():
 			flg2 = 'x'
 		if dep == gdep	 :
 			return self.heuristic(cur_board,flg) 
-		elif turn % 2 == 1 :
+		mn = -inf
+		mx = inf
+		rx = 0
+		ry = 0
+		rz = 0
+		if allowed_cells is not None: 
+			for i in range(len(allowed_cells)):
+				x = allowed_cells[i][0]
+				y = allowed_cells[i][1]
+				z = allowed_cells[i][2]
+				cur_board.big_boards_status[x][y][z]=flg 
+				sty = y/3
+				stz = z/3
+				for i in range(3):
+					for j in range(3):
+						temp_board2[i][j]= cur_board.big_boards_status[x][3*sty+i][3*stz+j]
+				temp_board2 = ([['-' for i in range(3)] for j in range(3)])
+				another_turn = 0
+				val2 = self.check_small_board_won(temp_board2)
+				if val2 != 0 :
+					another_turn = 1
+
+				val = 0 
+				if(another_turn == 1 ):
+					val = self.minmax(cur_board,(x,y,z),flg,dep+1,turn)
+				else : 
+					val = self.minmax(cur_board,(x,y,z),flg2,dep+1,1-turn)
 			allowed_cells = self.find_valid_move_cells(cur_board,old_move)
-			mn = -inf
-			mnx = 0
-			mny = 0
-			mnz = 0
-			if allowed_cells is not None: 
-				for i in range(len(allowed_cells)):
-					x = allowed_cells[i][0]
-					y = allowed_cells[i][1]
-					z = allowed_cells[i][2]
-					cur_board.big_boards_status[x][y][z]=flg 
-					sty = y/3
-					stz = z/3
-					for i in range(3):
-						for j in range(3):
-							temp_board2[i][j]= cur_board.big_boards_status[x][3*sty+i][3*stz+j]
-					temp_board2 = ([['-' for i in range(3)] for j in range(3)])
-					another_turn = 0
-					val2 = self.check_small_board_won(temp_board2)
-					if val2 != 0 :
-						another_turn = 1
-					
 
-					val = 0 
-					if(another_turn == 1 ):
-						val = self.minmax(cur_board,(x,y,z),flg,dep+1,turn)
-					else : 
-						val = self.minmax(cur_board,(x,y,z),flg2,dep+1,1-turn)
-
-					if val < mn:
-						mn = val
-						mnx = x 
-						mny = y
-						mnz = z
-					cur_board.big_boards_status[x][y][z]='-'
-					cur_board.small_boards_status[x][sty][stz] = '-'					
-				return (mnx,mny,mnz)
-		else :
-			allowed_cells = self.find_valid_move_cells(cur_board,old_move)
-			mx = 0
-			mxx = 0
-			mxy = 0
-			mxz = 0
-			if allowed_cells is not None: 
-				for i in range(len(allowed_cells)):
-					x = allowed_cells[i][0]
-					y = allowed_cells[i][1]
-					z = allowed_cells[i][2]
-					cur_board.big_boards_status[x][y][z]=flg 
-					sty = y/3
-					stz = z/3
-					for i in range(3):
-						for j in range(3):
-							temp_board2[i][j]= cur_board.big_boards_status[x][3*sty+i][3*stz+j]					
-					temp_board2 = ([['-' for i in range(3)] for j in range(3)])
-					another_turn = 0
-					val2 = self.check_small_board_won(temp_board2)
-					if val2 != 0 :
-						another_turn = 1
-
-					val = 0 
-					if(another_turn == 1 ):
-						val = self.minmax(cur_board,(x,y,z),flg,dep+1,turn)
-					else : 
-						val = self.minmax(cur_board,(x,y,z),flg2,dep+1,1-turn)					
-					val = self.minmax(cur_board,(x,y,z),flg2,dep+1)
-					if val > mx:
-						mx = val
-						mxx = x 
-						mxy = y
-						mxz = z
-					cur_board.big_boards_status[x][y][z]='-'
-					cur_board.small_boards_status[x][sty][stz] = '-'					
-				return (mxx,mxy,mxz)
-
-
+			if turn % 2 == 1 :
+				if val < mn:
+					mn = val
+					rx = x 
+					ry = y
+					rz = z
+			else : 
+				if val > mx:
+					mx = val
+					rx = x 
+					ry = y
+					rz = z			
+			cur_board.big_boards_status[x][y][z]='-'
+			cur_board.small_boards_status[x][sty][stz] = '-'					
+			return (mnx,mny,mnz)
 
 	def move(self,board,old_move,flg):
 		cur_board = copy.deepcopy(board)

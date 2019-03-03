@@ -171,6 +171,66 @@ class MyPlayer():
 		cross_score += 100*no_x
 
 		return (oval_score,cross_score)
+<<<<<<< HEAD
+=======
+	
+	def check_small_board_score(self,bs):
+		# middle zero and corner  
+		if bs[1][1] == 'x':
+			if bs[0][0] == 'x' or bs[0][2] == 'x' or bs[2][0] == 'x' or bs[2][2] == 'x':
+				cross_score += a4
+
+		if bs[1][1] == 'o':
+			if bs[0][0] == 'o' or bs[0][2] == 'o' or bs[2][0] == 'o' or bs[2][2] == 'o':
+				oval_score += a4
+
+
+		# middle and corner d
+		if bs[1][1] == 'x':
+			if bs[0][1] == 'x' or bs[1][0] == 'x' or bs[1][2] == 'x' or bs[2][1] == 'x':
+				cross_score += a2
+
+
+		if bs[1][1] == 'o':
+			if bs[0][1] == 'o' or bs[1][0] == 'o' or bs[1][2] == 'o' or bs[2][1] == 'o':
+				oval_score  += a2
+
+		#corner and middle middle
+		if bs[0][1] == 'x':
+			if bs[0][0] == 'x' or bs[0][2] == 'x':
+				cross_score += a1
+
+		if bs[2][1] == 'x':
+			if bs[2][0] == 'x' or bs[2][2] == 'x':
+				cross_score += a1
+
+		if bs[0][1] == 'o':
+			if bs[0][0] == 'o' or bs[0][2] == 'o':
+				oval_score += a1
+
+		if bs[2][1] == 'o':
+			if bs[2][0] == 'o' or bs[2][2] == 'o':
+				oval_score += a1
+
+		#vertical
+
+		if bs[1][0] == 'x':
+			if bs[0][0] == 'x' or bs[2][0] == 'x':
+				cross_score += a1
+
+		if bs[1][2] == 'x':
+			if bs[0][2] == 'x' or bs[2][2] == 'x':
+				cross_score += a1
+
+		if bs[1][0] == 'o':
+			if bs[0][0] == 'o' or bs[2][0] == 'o':
+				oval_score += a1
+
+		if bs[1][2] == 'o':
+			if bs[0][2] == 'o' or bs[2][2] == 'o':
+				oval_score += a1
+		return (oval_score,cross_score)
+>>>>>>> 05f4f367f2c3d9240c143ad76ba2104663038e99
 
 
 	def heuristic(self,board,flg):
